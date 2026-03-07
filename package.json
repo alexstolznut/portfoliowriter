@@ -1,0 +1,20 @@
+{
+  "name": "portfoliowriter",
+  "version": "0.1.0",
+  "description": "Desktop app scaffold for turning design files into portfolio case studies",
+  "main": "dist/main/main.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "npm run build && electron .",
+    "start": "electron .",
+    "lint": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "electron": "^31.7.7"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2"
+  }
+}
