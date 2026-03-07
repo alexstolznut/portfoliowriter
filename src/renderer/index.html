@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PortfolioWriter</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>PortfolioWriter</h1>
+      <p>Import design files, learn your writing style, and generate a strong first draft.</p>
+
+      <section>
+        <h2>1) Analyze existing portfolio style</h2>
+        <input id="portfolio-url" placeholder="https://your-portfolio.com/case-study" />
+        <button id="analyze-style">Analyze style</button>
+      </section>
+
+      <section>
+        <h2>2) Import design source</h2>
+        <select id="source-kind">
+          <option value="figma">Figma</option>
+          <option value="adobe-xd">Adobe XD</option>
+        </select>
+        <input id="source-reference" placeholder="Figma URL or local XD export path" />
+        <button id="import-design">Import</button>
+      </section>
+
+      <section>
+        <h2>3) Generate draft</h2>
+        <input id="project-title" placeholder="Project title" />
+        <textarea id="project-summary" placeholder="Project summary"></textarea>
+        <button id="generate-draft">Generate portfolio draft</button>
+      </section>
+
+      <section>
+        <h2>4) Publish</h2>
+        <button id="publish-draft">Publish to Squarespace</button>
+      </section>
+
+      <pre id="output"></pre>
+    </main>
+
+    <script type="module" src="../../dist/renderer/renderer.js"></script>
+  </body>
+</html>
