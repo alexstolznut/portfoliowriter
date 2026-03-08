@@ -1,4 +1,11 @@
-import type { Artboard, PortfolioDraft, PortfolioDraftRequest, StyleProfile, DesignImportRequest } from "../types/contracts.js";
+import type {
+  Artboard,
+  DesignImportRequest,
+  PortfolioDraft,
+  PortfolioDraftRequest,
+  PublishDraftResult,
+  StyleProfile
+} from "../types/contracts.js";
 
 declare global {
   interface Window {
@@ -6,7 +13,7 @@ declare global {
       importDesign: (payload: DesignImportRequest) => Promise<Artboard[]>;
       profileStyle: (portfolioUrl: string) => Promise<StyleProfile>;
       generateDraft: (payload: PortfolioDraftRequest) => Promise<PortfolioDraft>;
-      publishDraft: (draftMarkdown: string) => Promise<{ success: boolean; message: string }>;
+      publishDraft: (draftMarkdown: string) => Promise<PublishDraftResult>;
     };
   }
 }

@@ -36,3 +36,10 @@ export interface PortfolioDraft {
   }>;
   editorNotes: string[];
 }
+
+export interface PublishDraftResult {
+  success: boolean;
+  message: string;
+  copyBlock: string;
+  suggestedSlug: string;
+}

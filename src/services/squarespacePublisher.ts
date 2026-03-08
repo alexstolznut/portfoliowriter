@@ -1,33 +1,40 @@
-export const publishToSquarespace = async (draftMarkdown: string): Promise<{ success: boolean; message: string }> => {
-  const apiKey = process.env.SQUARESPACE_API_KEY;
-  const siteId = process.env.SQUARESPACE_SITE_ID;
+import type { PublishDraftResult } from "../types/contracts.js";
 
-  if (!apiKey || !siteId) {
-    return {
-      success: false,
-      message: "Missing SQUARESPACE_API_KEY or SQUARESPACE_SITE_ID."
-    };
-  }
+const slugify = (title: string): string =>
+  title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || "portfolio-case-study";
 
-  const response = await fetch(`https://api.squarespace.com/1.0/sites/${siteId}/blog-posts`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      title: "New Portfolio Case Study",
-      body: draftMarkdown,
-      status: "DRAFT"
-    })
-  });
+const extractTitle = (draftMarkdown: string): string => {
+  const firstHeading = draftMarkdown
+    .split("\n")
+    .map((line) => line.trim())
+    .find((line) => line.startsWith("# "));
 
-  if (!response.ok) {
-    return {
-      success: false,
-      message: `Squarespace publish failed with status ${response.status}.`
-    };
-  }
+  return firstHeading ? firstHeading.replace(/^#\s+/, "").trim() : "New Portfolio Case Study";
+};
 
-  return { success: true, message: "Draft published to Squarespace." };
+export const publishToSquarespace = async (draftMarkdown: string): Promise<PublishDraftResult> => {
+  const title = extractTitle(draftMarkdown);
+  const suggestedSlug = slugify(title);
+
+  const copyBlock = [
+    "---",
+    `Title: ${title}`,
+    `Suggested URL slug: ${suggestedSlug}`,
+    "Status: Draft",
+    "---",
+    "",
+    draftMarkdown
+  ].join("\n");
+
+  return {
+    success: true,
+    message:
+      "Squarespace API keys are optional in this version. Copy the prepared draft below and paste it into your Squarespace page editor.",
+    copyBlock,
+    suggestedSlug
+  };
 };
