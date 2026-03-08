@@ -15,6 +15,7 @@
         <h2>1) Analyze existing portfolio style</h2>
         <input id="portfolio-url" placeholder="https://your-portfolio.com/case-study" />
         <button id="analyze-style">Analyze style</button>
+        <p id="website-status" class="status status-idle" aria-live="polite">Website status: Not checked yet.</p>
       </section>
 
       <section>
@@ -25,6 +26,8 @@
         </select>
         <input id="source-reference" placeholder="Figma URL, pasted Figma JSON, or local JSON export path" />
         <button id="import-design">Import</button>
+        <p id="figma-compatibility-status" class="status status-idle" aria-live="polite">Figma URL compatibility: Not checked yet.</p>
+        <p id="design-analysis-status" class="status status-idle" aria-live="polite">Design analysis status: Not started.</p>
       </section>
 
       <section>
