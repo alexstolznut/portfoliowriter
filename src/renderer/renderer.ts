@@ -47,5 +47,5 @@ const write = (value: unknown) => {
   ].join("\n\n");
 
   const result = await window.portfolioWriter.publishDraft(markdown);
-  write(result);
+  write(`${result.message}\n\n${result.copyBlock}`);
 });

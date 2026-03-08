@@ -1,12 +1,5 @@
+import { readFile } from "node:fs/promises";
 import type { Artboard } from "../types/contracts.js";
-
-const readFigmaToken = (): string => {
-  const token = process.env.FIGMA_ACCESS_TOKEN;
-  if (!token) {
-    throw new Error("Missing FIGMA_ACCESS_TOKEN in environment.");
-  }
-  return token;
-};
 
 const parseFigmaFileKey = (reference: string): string => {
   const url = new URL(reference);
@@ -17,22 +10,87 @@ const parseFigmaFileKey = (reference: string): string => {
   return match[1];
 };
 
-export const importFigmaArtboards = async (reference: string): Promise<Artboard[]> => {
-  const token = readFigmaToken();
-  const fileKey = parseFigmaFileKey(reference);
+const loadFigmaDocument = async (reference: string): Promise<{
+  document?: {
+    children?: Array<{
+      id: string;
+      name: string;
+      children?: Array<{
+        id: string;
+        name: string;
+        absoluteBoundingBox?: { width: number; height: number };
+      }>;
+    }>;
+  };
+}> => {
+  const trimmed = reference.trim();
+  const token = process.env.FIGMA_ACCESS_TOKEN;
 
-  const response = await fetch(`https://api.figma.com/v1/files/${fileKey}`, {
-    headers: { "X-Figma-Token": token }
-  });
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    if (!token) {
+      throw new Error(
+        "Figma URL import requires FIGMA_ACCESS_TOKEN. For a key-free flow, paste Figma JSON or provide a local .json file path."
+      );
+    }
 
-  if (!response.ok) {
-    throw new Error(`Figma file fetch failed: ${response.status}`);
+    const fileKey = parseFigmaFileKey(trimmed);
+    const response = await fetch(`https://api.figma.com/v1/files/${fileKey}`, {
+      headers: { "X-Figma-Token": token }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Figma file fetch failed: ${response.status}`);
+    }
+
+    return (await response.json()) as {
+      document?: {
+        children?: Array<{
+          id: string;
+          name: string;
+          children?: Array<{
+            id: string;
+            name: string;
+            absoluteBoundingBox?: { width: number; height: number };
+          }>;
+        }>;
+      };
+    };
   }
 
-  const json = (await response.json()) as {
-    document?: { children?: Array<{ id: string; name: string; children?: Array<{ id: string; name: string; absoluteBoundingBox?: { width: number; height: number } }> }> };
-  };
+  if (trimmed.startsWith("{")) {
+    return JSON.parse(trimmed) as {
+      document?: {
+        children?: Array<{
+          id: string;
+          name: string;
+          children?: Array<{
+            id: string;
+            name: string;
+            absoluteBoundingBox?: { width: number; height: number };
+          }>;
+        }>;
+      };
+    };
+  }
 
+  const raw = await readFile(trimmed, "utf8");
+  return JSON.parse(raw) as {
+    document?: {
+      children?: Array<{
+        id: string;
+        name: string;
+        children?: Array<{
+          id: string;
+          name: string;
+          absoluteBoundingBox?: { width: number; height: number };
+        }>;
+      }>;
+    };
+  };
+};
+
+export const importFigmaArtboards = async (reference: string): Promise<Artboard[]> => {
+  const json = await loadFigmaDocument(reference);
   const pages = json.document?.children ?? [];
   const artboards: Artboard[] = [];
 
